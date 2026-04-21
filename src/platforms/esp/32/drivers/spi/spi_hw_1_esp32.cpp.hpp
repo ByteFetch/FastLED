@@ -291,6 +291,7 @@ void SPISingleESP32::cleanup() FL_NOEXCEPT {
 
         if (mBusInitializedByUs) {
             spi_bus_free(mHost);
+            mBusInitializedByUs = false;
         }
         mInitialized = false;
     }
