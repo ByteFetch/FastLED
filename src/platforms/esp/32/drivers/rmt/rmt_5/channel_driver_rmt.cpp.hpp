@@ -1487,7 +1487,7 @@ class ChannelEngineRMTImpl : public ChannelEngineRMT {
     /// @brief Peripheral interface (real or mock)
     IRMT5Peripheral& mPeripheral;
 
-    /// @brief Manager-owned callback signaled from TX-done ISR.
+    /// @brief Manager-owned poll-needed callback (S12 fork: no longer signaled from the TX-done ISR; the manager polls).
     PollNeededCallbackSlot mPollNeededCallback;
 
     /// @brief All RMT channels (active and idle)

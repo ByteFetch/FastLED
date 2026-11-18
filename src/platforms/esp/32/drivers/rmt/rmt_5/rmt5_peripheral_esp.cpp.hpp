@@ -640,7 +640,7 @@ private:
     }
 
     // Private methods
-    // Note: No static global accesses allowed in FL_IRAM functions on Xtensa.
+    // Note: No static global accesses allowed in IRAM (IRAM_ATTR) functions on Xtensa.
     // Static globals require 32-bit address loads via l32r, which needs literal
     // pool entries. Per-function IRAM sections cause the linker to place literals
     // after code, but l32r can only reference backward â€” causing link failure.
