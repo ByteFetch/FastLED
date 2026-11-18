@@ -1805,11 +1805,13 @@ bool IRAM_ATTR ChannelEngineRMTImpl::transmitDoneCallback(
     // Mark transmission as complete (polled by main thread)
     // NOTE: This flag triggers releaseChannel(), which performs hardware wait
     state->transmissionComplete.store(true, fl::memory_order_release);
-    if (state->owner != nullptr) {
-        state->owner->mPollNeededCallback.invoke();
-    }
+    // S12 (GlowBone fork): no mPollNeededCallback.invoke() here. That chain
+    // (PollNeededCallbackSlot::invoke -> ChannelManager::notifyPollNeededThunk ->
+    // ChannelPollSignal::notify -> CountingSemaphoreESP32::release) is linked in
+    // flash and is unsafe from this ISR. The manager's timed wait (1 ms slice)
+    // notices the completion instead, as at cec6034.
 
-    // Non-blocking design - the manager-owned callback performs any wakeup.
+    // Non-blocking design: the main thread polls the flag.
     return false; // No task switch needed
 }
 

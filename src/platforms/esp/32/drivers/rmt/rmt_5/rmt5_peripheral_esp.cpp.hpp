@@ -346,7 +346,7 @@ struct TxCallbackContext {
 /// This static function matches ESP-IDF's rmt_tx_done_callback_t signature and
 /// forwards to the user's Rmt5TxDoneCallback. The adaptation is trivial since
 /// both channel and event data are passed through as opaque pointers.
-static bool FL_IRAM txDoneCallbackWrapper(
+static bool IRAM_ATTR txDoneCallbackWrapper(
     rmt_channel_handle_t channel,
     const rmt_tx_done_event_data_t* edata,
     void* user_data) FL_NO_EXCEPT {
@@ -644,7 +644,7 @@ private:
     // Static globals require 32-bit address loads via l32r, which needs literal
     // pool entries. Per-function IRAM sections cause the linker to place literals
     // after code, but l32r can only reference backward â€” causing link failure.
-    size_t FL_IRAM encode(rmt_channel_handle_t channel,
+    size_t IRAM_ATTR encode(rmt_channel_handle_t channel,
                           const void* primary_data, size_t data_size,
                           rmt_encode_state_t* ret_state) FL_NO_EXCEPT {
         rmt_encode_state_t session_state = RMT_ENCODING_RESET;
@@ -687,7 +687,7 @@ private:
         return encoded_symbols;
     }
 
-    esp_err_t FL_IRAM reset() FL_NO_EXCEPT {
+    esp_err_t IRAM_ATTR reset() FL_NO_EXCEPT {
         mState = 0;
         if (mBytesEncoder) {
             mBytesEncoder->reset(mBytesEncoder);
@@ -771,7 +771,7 @@ private:
     // Use reinterpret_cast (not fl::bit_cast) in FL_IRAM functions: bit_cast's
     // memcpy generates l32r literal pool entries that break Xtensa per-function
     // IRAM sections. Safe here because rmt_encoder_t base is the first member.
-    static size_t FL_IRAM encodeCallback(rmt_encoder_t* encoder,
+    static size_t IRAM_ATTR encodeCallback(rmt_encoder_t* encoder,
                                          rmt_channel_handle_t channel,
                                          const void* primary_data,
                                          size_t data_size,
@@ -780,7 +780,7 @@ private:
         return impl->encode(channel, primary_data, data_size, ret_state);
     }
 
-    static esp_err_t FL_IRAM resetCallback(rmt_encoder_t* encoder) FL_NO_EXCEPT {
+    static esp_err_t IRAM_ATTR resetCallback(rmt_encoder_t* encoder) FL_NO_EXCEPT {
         auto* impl = reinterpret_cast<Rmt5EncoderImpl*>(encoder); // ok reinterpret cast - first member
         return impl->reset();
     }
